@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd ">
+    <flow name="payment-sapi-raml-main">
+        <http:listener config-ref="payment-sapi-raml-httpListenerConfig" path="/api/*">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body>#[payload]</http:body>
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:error-response>
+        </http:listener>
+        <apikit:router config-ref="payment-sapi-raml-config" />
+		<error-handler ref="global-errorError_Handler" />
+    </flow>
+    <flow name="payment-sapi-raml-console">
+        <http:listener config-ref="payment-sapi-raml-httpListenerConfig" path="/console/*">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body>#[payload]</http:body>
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:error-response>
+        </http:listener>
+        <apikit:console config-ref="payment-sapi-raml-config" />
+		<error-handler ref="global-errorError_Handler" />
+    </flow>
+    <flow name="get:\payments\exchangeRates:payment-sapi-raml-config">
+        <ee:transform doc:name="Transform Message">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  msg: "failed operation",
+  code: 400,
+  eventId: "dbfhjsdb-hfb-do8ryt-876t7-5ty",
+  error: {
+    "type": "BAD_REQUEST",
+    title: "Invalid Request",
+    details: "The input contains invalid data"
+  }
+}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+    <flow name="get:\payments\referenceId:payment-sapi-raml-config">
+        <ee:transform doc:name="Transform Message">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  msg: "failed operation",
+  code: 400,
+  eventId: "dbfhjsdb-hfb-do8ryt-876t7-5ty",
+  error: {
+    "type": "BAD_REQUEST",
+    title: "Invalid Request",
+    details: "The input contains invalid data"
+  }
+}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+    <flow name="post:\payments\checkouts:application\json:payment-sapi-raml-config">
+        <ee:transform doc:name="Transform Message">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  msg: "failed operation",
+  code: 400,
+  eventId: "dbfhjsdb-hfb-do8ryt-876t7-5ty",
+  error: {
+    "type": "BAD_REQUEST",
+    title: "Invalid Request",
+    details: "The input contains invalid data"
+  }
+}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+    <flow name="post:\payments\paymentTransactions:application\json:payment-sapi-raml-config">
+		<flow-ref doc:name="Initialize-request-data-flow" doc:id="44bc08c2-a2b2-43ec-84f9-36f7d515863b" name="Initialize-request-data" />
+		<logger level="INFO" doc:name="start logger" doc:id="2259297d-2b7c-426d-ae50-117ea211cabc" message='#[%dw 2.0&#10;output application/json indent = false&#10;---&#10;{&#10;	Timestamp: vars.startTime,&#10;	TransactionId: vars.transactionId,&#10;	Appname: app.name,&#10;	FlowName: flow.name,&#10;	BusinessProcessname: "Transaction process",&#10;	Category: "Payment",&#10;	OriginatingApplication: "Process API",&#10;	DestinationApplication: "Database",&#10;	PolicyNumber: vars.requestData.recordPaymentTransactionRequest.transactionDetails.policyNumber,&#10;	TxnState: "START"&#10;}]'/>
+		<flow-ref doc:name="implementation-Flow Reference" doc:id="dfcc0ffd-1d8a-4b89-a211-45e090905dc7" name="record-payment-transaction-implFlow"/>
+		<logger level="INFO" doc:name="end logger" doc:id="d072701c-6688-4183-ac3e-13799033c8d1" message="#[%dw 2.0&#10;output application/json indent = false&#10;---&#10;{&#10;	Timestamp: vars.startTime,&#10;	TransactionId: vars.transactionId,&#10;	Appname: app.name,&#10;	FlowName: flow.name,&#10;	BusinessProcessname: &quot;Transaction process&quot;,&#10;	Category: &quot;Payment&quot;,&#10;	OriginatingApplication: &quot;Process API&quot;,&#10;	DestinationApplication: &quot;Database&quot;,&#10;	PolicyNumber: vars.requestData.recordPaymentTransactionRequest.transactionDetails.policyNumber,&#10;	TxnState: &quot;START&quot;,&#10;	ProcessTime: ((now() &gt;&gt; &quot;UTC&quot;) as String {format: &quot;yyyy-MM-dd'T'hh:mm:ss&quot;}) - vars.startTime&#10;}]"/>
+    </flow>
+</mule>

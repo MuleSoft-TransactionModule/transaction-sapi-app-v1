@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd">
+	<flow name="record-payment-transaction-implFlow" doc:id="adfb059b-3216-49e0-a584-ed4d26f8cf21" >
+		<logger level="INFO" doc:name="DB Call Start Logger" doc:id="315e6936-d851-4e81-86c4-05e0b0be473e" message="#[%dw 2.0&#10;output application/json indent = false&#10;---&#10;{&#10;	Timestamp: ((now() &gt;&gt; &quot;UTC&quot;) as String {format: &quot;yyyy-MM-dd'T'hh:mm:ss&quot;}),&#10;	TransactionId: vars.transactionId,&#10;	Appname: app.name,&#10;	FlowName: flow.name,&#10;	BusinessProcessname: &quot;Transaction process&quot;,&#10;	Category: &quot;Payment&quot;,&#10;	OriginatingApplication: &quot;Process API&quot;,&#10;	DestinationApplication: &quot;Database&quot;,&#10;	PolicyNumber: vars.requestData.recordPaymentTransactionRequest.transactionDetails.policyNumber,&#10;	TxnState: &quot;START&quot;,&#10;	ProcessTime: &quot;Request to Payment DB&quot;&#10;}]"/>
+		<db:insert doc:name="Insert" doc:id="d4c4c0b5-cbfa-4eac-b3a6-33cab75bf22d" />
+		<logger level="INFO" doc:name="Payment DB Call End Logger" doc:id="83c37b67-01c9-4b32-b9c5-f69554587347" message="#[%dw 2.0&#10;output application/json indent = false&#10;---&#10;{&#10;	Timestamp: ((now() &gt;&gt; &quot;UTC&quot;) as String {format: &quot;yyyy-MM-dd'T'hh:mm:ss&quot;}),&#10;	TransactionId: vars.transactionId,&#10;	Appname: app.name,&#10;	FlowName: flow.name,&#10;	BusinessProcessname: &quot;Transaction process&quot;,&#10;	Category: &quot;Payment&quot;,&#10;	OriginatingApplication: &quot;Process API&quot;,&#10;	DestinationApplication: &quot;Database&quot;,&#10;	PolicyNumber: vars.requestData.recordPaymentTransactionRequest.transactionDetails.policyNumber,&#10;	TxnState: &quot;START&quot;,&#10;	ProcessTime: &quot;Response From Payment DB&quot;&#10;}]"/>
+	</flow>
+</mule>
