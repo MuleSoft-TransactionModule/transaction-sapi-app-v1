@@ -17,6 +17,7 @@
       "exportedPackages": [],
       "exportedResources": [
         "log4j2.xml",
+        ".DS_Store",
         "application-types.xml",
         "common/global-config.xml",
         "common/global-error.xml",
