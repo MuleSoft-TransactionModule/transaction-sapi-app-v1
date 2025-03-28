@@ -1,8 +1,11 @@
 {
   "configs": [
     "common/global-error.xml",
+    "implementation/generate-payment-reference-impl.xml",
     "common-implementation.xml",
+    "implementation/checkout-payment-transaction-impl.xml",
     "common/global-config.xml",
+    "implementation/exchange-rate-impl.xml",
     "implementation/record-payment-transaction-impl.xml",
     "payment-sapi-raml.xml"
   ],
@@ -27,6 +30,9 @@
         "properties/prd.yaml",
         "properties/local.yaml",
         "properties/ppe.yaml",
+        "implementation/generate-payment-reference-impl.xml",
+        "implementation/checkout-payment-transaction-impl.xml",
+        "implementation/exchange-rate-impl.xml",
         "implementation/record-payment-transaction-impl.xml",
         "api/exchange_modules/f2711ba6-9ba8-44c8-abf2-a088807361b1/common-fragment/1.0.4/example/error-400-example.json",
         "api/exchange_modules/f2711ba6-9ba8-44c8-abf2-a088807361b1/common-fragment/1.0.4/example/error-401-example.json",
