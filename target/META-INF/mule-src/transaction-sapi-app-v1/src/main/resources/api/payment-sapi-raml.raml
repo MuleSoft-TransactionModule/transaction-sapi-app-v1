@@ -1,0 +1,85 @@
+#%RAML 1.0
+title: payment-sapi-raml
+description: The API will record transaction details in company database.
+version: 1.0.0
+
+uses:
+  common-library: exchange_modules/f2711ba6-9ba8-44c8-abf2-a088807361b1/common-fragment/1.0.4/common-fragment.raml
+
+
+securitySchemes:
+ :
+  type: OAuth 2.0
+
+/payments:
+  /referenceId:
+    get:
+      is:
+        - common-library.common-headers
+        - common-library.data-header 
+        - common-library.common-error
+      responses:
+        200:
+          body:
+            application/json:
+              type: !include /dataType/response-generate-paymentReferenceId-dataType.raml
+              
+  /exchangeRates:
+    get:
+      is:
+        - common-library.common-headers
+        - common-library.data-header
+        - common-library.common-error
+      queryParameters:
+        baseCurrency:
+          type: string
+          example: "INR"
+        currentCurrency:
+          type: string
+          example: "USD" 
+      responses:
+        200:
+          body:
+            application/json:
+              type: !include /dataType/response-exchange-rate.raml
+                     
+  /checkouts:
+    post: 
+      is:
+        - common-library.common-headers
+        - common-library.data-header
+        - common-library.common-error 
+      body:
+        application/json:
+          type: !include /dataType/request-checkout-dataType.raml
+      responses:
+        200:
+          body:
+            application/json:
+              type: !include /dataType/response-checkout-dataType.raml          
+  /paymentTransactions:
+    post:
+      is:
+        - common-library.common-headers
+        - common-library.data-header 
+        - common-library.common-error
+      body:
+        application/json:
+          type: object
+          properties:
+            recordPaymentTransactionRequest:
+              type: object
+              properties:
+                paymentReferenceId:
+                  required: true
+                transactionDetails:
+                  required: true  
+                  type: common-library.request-recordPayment
+      responses:
+        200:
+          body:
+            application/json:
+              type: common-library.response-recordPayment
+
+                      
+            

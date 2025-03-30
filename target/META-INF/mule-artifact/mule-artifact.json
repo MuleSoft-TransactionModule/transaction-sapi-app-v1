@@ -1,0 +1,63 @@
+{
+  "configs": [
+    "common/global-error.xml",
+    "implementation/generate-payment-reference-impl.xml",
+    "common-implementation.xml",
+    "implementation/checkout-payment-transaction-impl.xml",
+    "common/global-config.xml",
+    "implementation/exchange-rate-impl.xml",
+    "implementation/record-payment-transaction-impl.xml",
+    "payment-sapi-raml.xml"
+  ],
+  "secureProperties": [],
+  "redeploymentEnabled": true,
+  "name": "com.mycompany:transaction-sapi-app-v1:1.0.0-SNAPSHOT",
+  "minMuleVersion": "4.4.0",
+  "requiredProduct": "MULE_EE",
+  "classLoaderModelLoaderDescriptor": {
+    "id": "mule",
+    "attributes": {
+      "exportedPackages": [],
+      "exportedResources": [
+        "log4j2.xml",
+        ".DS_Store",
+        "application-types.xml",
+        "common/global-config.xml",
+        "common/global-error.xml",
+        "properties/uat.yaml",
+        "properties/dev.yaml",
+        "properties/sit.yaml",
+        "properties/prd.yaml",
+        "properties/local.yaml",
+        "properties/ppe.yaml",
+        "implementation/generate-payment-reference-impl.xml",
+        "implementation/checkout-payment-transaction-impl.xml",
+        "implementation/exchange-rate-impl.xml",
+        "implementation/record-payment-transaction-impl.xml",
+        "api/exchange_modules/f2711ba6-9ba8-44c8-abf2-a088807361b1/common-fragment/1.0.4/example/error-400-example.json",
+        "api/exchange_modules/f2711ba6-9ba8-44c8-abf2-a088807361b1/common-fragment/1.0.4/example/error-401-example.json",
+        "api/exchange_modules/f2711ba6-9ba8-44c8-abf2-a088807361b1/common-fragment/1.0.4/example/error-500-example.json",
+        "api/exchange_modules/f2711ba6-9ba8-44c8-abf2-a088807361b1/common-fragment/1.0.4/example/error-404-example.json",
+        "api/exchange_modules/f2711ba6-9ba8-44c8-abf2-a088807361b1/common-fragment/1.0.4/datatype/response-recordPayment-dataType.raml",
+        "api/exchange_modules/f2711ba6-9ba8-44c8-abf2-a088807361b1/common-fragment/1.0.4/datatype/request-recordPayment-dataType.raml",
+        "api/exchange_modules/f2711ba6-9ba8-44c8-abf2-a088807361b1/common-fragment/1.0.4/datatype/error-response-dataType.raml",
+        "api/exchange_modules/f2711ba6-9ba8-44c8-abf2-a088807361b1/common-fragment/1.0.4/trait/common-error-trait.raml",
+        "api/exchange_modules/f2711ba6-9ba8-44c8-abf2-a088807361b1/common-fragment/1.0.4/trait/common-headers-trait.raml",
+        "api/exchange_modules/f2711ba6-9ba8-44c8-abf2-a088807361b1/common-fragment/1.0.4/trait/authorization-header-trait.raml",
+        "api/exchange_modules/f2711ba6-9ba8-44c8-abf2-a088807361b1/common-fragment/1.0.4/trait/data-header-trait.raml",
+        "api/exchange_modules/f2711ba6-9ba8-44c8-abf2-a088807361b1/common-fragment/1.0.4/common-fragment.raml",
+        "api/dataType/request-checkout-dataType.raml",
+        "api/dataType/response-generate-paymentReferenceId-dataType.raml",
+        "api/dataType/response-exchange-rate.raml",
+        "api/dataType/response-checkout-dataType.raml",
+        "api/payment-sapi-raml.raml",
+        "payment-sapi-raml.xml",
+        "common-implementation.xml"
+      ]
+    }
+  },
+  "bundleDescriptorLoader": {
+    "id": "mule",
+    "attributes": {}
+  }
+}

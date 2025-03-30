@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<flow name="generate-payment-reference-implFlow" doc:id="4573f575-31b4-445d-a71a-6636c9320cae" >
+		<logger level="INFO" doc:name="DB Call Start Logger" doc:id="a4f58806-e43e-4c77-b3e0-c9420adce863" message="#[%dw 2.0&#10;output application/json indent = false&#10;---&#10;{&#10;	Timestamp: ((now() &gt;&gt; &quot;UTC&quot;) as String {format: &quot;yyyy-MM-dd'T'hh:mm:ss&quot;}),&#10;	TransactionId: vars.transactionId,&#10;	Appname: app.name,&#10;	FlowName: flow.name,&#10;	BusinessProcessname: &quot;Transaction process&quot;,&#10;	Category: &quot;Payment&quot;,&#10;	OriginatingApplication: &quot;Process API&quot;,&#10;	DestinationApplication: &quot;Database&quot;,&#10;	PolicyNumber: vars.requestData.body.recordPaymentTransactionRequest.transactionDetails.policyNumber,&#10;	TxnState: &quot;START&quot;,&#10;	ProcessTime: &quot;Request to Payment DB&quot;&#10;}]" />
+		<ee:transform doc:name="Transform Message" doc:id="fb4ad0f8-7798-4de5-ac08-2829def74b1e">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+paymentReferenceId : ("PAYMENT" ++ (now() as String {format: "yyyyMMddhhmmssA"}))]]></ee:set-payload>
+			</ee:message>
+			<ee:variables>
+				<ee:set-variable variableName="httpStatus"><![CDATA[201]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<logger level="INFO" doc:name="Payment DB Call End Logger" doc:id="7e538dc0-4fe3-41b4-903e-8e7765ec2b58" message="#[%dw 2.0&#10;output application/json indent = false&#10;---&#10;{&#10;	Timestamp: ((now() &gt;&gt; &quot;UTC&quot;) as String {format: &quot;yyyy-MM-dd'T'hh:mm:ss&quot;}),&#10;	TransactionId: vars.transactionId,&#10;	Appname: app.name,&#10;	FlowName: flow.name,&#10;	BusinessProcessname: &quot;Transaction process&quot;,&#10;	Category: &quot;Payment&quot;,&#10;	OriginatingApplication: &quot;Process API&quot;,&#10;	DestinationApplication: &quot;Database&quot;,&#10;	PolicyNumber: vars.requestData.body.recordPaymentTransactionRequest.transactionDetails.policyNumber,&#10;	TxnState: &quot;START&quot;,&#10;	ProcessTime: &quot;Response From Payment DB&quot;&#10;}]" />
+		<error-handler >
+			<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="df96c923-09ff-4068-928e-5909e3b764da" >
+				<logger level="INFO" doc:name="Logger" doc:id="6a54a3b5-4919-47dd-a47e-261987f84e72" message="#[%dw 2.0&#10;output application/json&#10;---&#10;{&#10;	Timestamp: ((now() &gt;&gt; &quot;UTC&quot;) as String {format: &quot;yyyy-MM-dd'T'hh:mm:ss&quot;}),&#10;	TransactionId: vars.transactionId,&#10;	Appname: app.name,&#10;	FlowName: flow.name,&#10;	BusinessProcessname: &quot;Transaction process&quot;,&#10;	Category: &quot;Payment&quot;,&#10;	OriginatingApplication: &quot;Process API&quot;,&#10;	DestinationApplication: &quot;Database&quot;,&#10;	PolicyNumber: vars.requestData.body.recordPaymentTransactionRequest.transactionDetails.policyNumber,&#10;	TxnState: &quot;START&quot;,&#10;	ProcessTime: &quot;Error&quot;&#10;}]" />
+				<ee:transform doc:name="Transform Message" doc:id="fd877b3f-ebf8-4c19-97a4-4541a14d910b">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  "msg": "failed operation",
+  "code": 500,
+  "eventId": "vars.transactionId",
+  "error": {
+    "type": "DataBase_Error",
+    "title": "DB_Error",
+    "details": "DB Error Occurred"
+  }
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+			</on-error-propagate>
+		</error-handler>
+	</flow>
+</mule>

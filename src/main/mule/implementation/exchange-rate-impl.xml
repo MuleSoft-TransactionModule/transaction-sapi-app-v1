@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<flow name="exchange-rate-impl" doc:id="0b72a84d-3b32-4e8a-bb2c-d5248b7f7bb5" >
+		<logger level="INFO" doc:name="DB Call Start Logger" doc:id="c37cf47e-7681-4ee1-b863-7eaf306d104e" message="#[%dw 2.0&#10;output application/json indent = false&#10;---&#10;{&#10;	Timestamp: ((now() &gt;&gt; &quot;UTC&quot;) as String {format: &quot;yyyy-MM-dd'T'hh:mm:ss&quot;}),&#10;	TransactionId: vars.transactionId,&#10;	Appname: app.name,&#10;	FlowName: flow.name,&#10;	BusinessProcessname: &quot;Transaction process&quot;,&#10;	Category: &quot;Payment&quot;,&#10;	OriginatingApplication: &quot;Process API&quot;,&#10;	DestinationApplication: &quot;Database&quot;,&#10;	PolicyNumber: vars.requestData.body.recordPaymentTransactionRequest.transactionDetails.policyNumber,&#10;	TxnState: &quot;START&quot;,&#10;	ProcessTime: &quot;Request to Payment DB&quot;&#10;}]" />
+		<http:request method="GET" doc:name="Request to exchangeRate api" doc:id="cb0991df-ce3d-4d03-9fdb-358231e88aeb" config-ref="HTTP_Request_Configuration_exchangeRate" path="${exchangeRate.endpoint}">
+			<http:headers ><![CDATA[#[output application/java
+---
+{
+	"apikey" : p('exchangeRate.apiKey')
+}]]]></http:headers>
+			<http:query-params ><![CDATA[#[output application/java
+---
+{
+	"from" : vars.requestData.queryParams.baseCurrency,
+	"to" : vars.requestData.queryParams.currentCurrency,
+	"amount" : 1
+}]]]></http:query-params>
+		</http:request>
+		<logger level="INFO" doc:name="Payment DB Call End Logger" doc:id="7165d6b2-ba3d-44cc-ad42-ff53649c38bc" message="#[%dw 2.0&#10;output application/json indent = false&#10;---&#10;{&#10;	Timestamp: ((now() &gt;&gt; &quot;UTC&quot;) as String {format: &quot;yyyy-MM-dd'T'hh:mm:ss&quot;}),&#10;	TransactionId: vars.transactionId,&#10;	Appname: app.name,&#10;	FlowName: flow.name,&#10;	BusinessProcessname: &quot;Transaction process&quot;,&#10;	Category: &quot;Payment&quot;,&#10;	OriginatingApplication: &quot;Process API&quot;,&#10;	DestinationApplication: &quot;Database&quot;,&#10;	PolicyNumber: vars.requestData.body.recordPaymentTransactionRequest.transactionDetails.policyNumber,&#10;	TxnState: &quot;START&quot;,&#10;	ProcessTime: &quot;Response From Payment DB&quot;&#10;}]" />
+		<ee:transform doc:name="Transform Message" doc:id="d3e96ccb-c2a6-45f9-baa5-400f98dab952" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"baseCurrency" : vars.requestData.queryParams.baseCurrency,
+	"currentCurrency" : vars.requestData.queryParams.currentCurrency,
+	"amount" : payload.info.rate
+}]]></ee:set-payload>
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="httpStatus" ><![CDATA[201]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<error-handler >
+			<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="93a4a701-b5ac-4509-b3dd-5e220302969d" >
+				<logger level="INFO" doc:name="Logger" doc:id="2f5ea879-5b20-46ca-9ee4-9c42df75e633" message="#[%dw 2.0&#10;output application/json&#10;---&#10;{&#10;	Timestamp: ((now() &gt;&gt; &quot;UTC&quot;) as String {format: &quot;yyyy-MM-dd'T'hh:mm:ss&quot;}),&#10;	TransactionId: vars.transactionId,&#10;	Appname: app.name,&#10;	FlowName: flow.name,&#10;	BusinessProcessname: &quot;Transaction process&quot;,&#10;	Category: &quot;Payment&quot;,&#10;	OriginatingApplication: &quot;Process API&quot;,&#10;	DestinationApplication: &quot;Database&quot;,&#10;	PolicyNumber: vars.requestData.body.recordPaymentTransactionRequest.transactionDetails.policyNumber,&#10;	TxnState: &quot;START&quot;,&#10;	ProcessTime: &quot;Error&quot;&#10;}]" />
+				<ee:transform doc:name="Transform Message" doc:id="e20055ee-7daa-448c-9936-b488686f6e58" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+  "msg": "failed operation",
+  "code": 500,
+  "eventId": "vars.transactionId",
+  "error": {
+    "type": "DataBase_Error",
+    "title": "DB_Error",
+    "details": "DB Error Occurred"
+  }
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</on-error-propagate>
+		</error-handler>
+	</flow>
+</mule>
